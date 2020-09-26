@@ -1,0 +1,49 @@
+## -*- coding: utf-8;mode: org; fill-column: 80;  -*-
+## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
+
+#+TITLE: Implementing Unset
+
+* Scope
+https://github.com/php/php-langspec/blob/master/spec/11-statements.md#the-unset-statement
+
+- [X] unset global scoped variables outside of functions
+- [X] unset function local variables within function
+- [ ] unset static variables
+- [ ] unset by ref variables
+- [ ] unset array entries
+- [ ] unset object properties
+
+
+* Implementation
+- We assign an instance of Undefined to the field and throw an
+  exception if we try to read it, this overwrites the original
+  value. Making it available for Javas GC to clean.
+
+If we unset a variable we fall back to interpreter.  This is not considered
+fast. So in order to write idiomatic code, one should leave unsetting of
+variables to GC.
+
+* Initial Work on Unset
+In order to run our second benchmark (binary trees), we need to be
+able to unset variables.  PHP offers a feature to unset a
+variable. Variables are automatically unset if they fall out of
+scope. With unset one can remove variables earlier than they are unset
+by the runtime.
+
+PHP allows to unset variables at different places in different
+context. We implement a subset of the unset behavior.
+- Namely to unset variables within function
+- To unset variables in global scope outside of function.
+
+PHP allows to unset static variables, array entries, object
+properties, or global variables within functions. This functionality
+depends on the availability of above language constructs.
+
+By unsetting a variable, we remove it from our parsescope of available
+variables. The Truffle Frame/ FrameDescriptor APIs provide a way to
+remove a frameslot from a frame descriptor. However, lookup nodes
+which contain a reference to a frame slot still are able to lookup
+variables from the internal locals storage of a Frame (Read Local
+Variable Nodes).  Which is why this design overwrites an unset
+variable with a place holder which causes an exception if it is tried
+to be read.

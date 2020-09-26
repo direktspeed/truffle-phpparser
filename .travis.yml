@@ -1,0 +1,34 @@
+env:
+   global:
+    - CI=true
+    - GRAALVM_VERSION="20.2.0"
+    - GRAALVM_JAVA_VERSION="11"
+    - TRUFFLEPHP_BUILD_NATIVE="true"
+    - TEST="./trufflephp-language/tests/assign/assign-var-03.php"
+
+os: linux
+
+dist: xenial
+
+language: java
+
+jdk:
+  - openjdk11
+
+install:
+  - GRAAL_VM="https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.2.0/graalvm-ce-java11-linux-amd64-20.2.0.tar.gz"
+  - curl -LJ $GRAAL_VM --output graalvm.tar.gz
+  - tar -xzf graalvm.tar.gz
+  - JAVA_HOME=$(pwd)/graalvm-ce-java11-20.2.0
+  - echo $JAVA_HOME
+  - export JAVA_HOME
+  - $JAVA_HOME/bin/gu install native-image
+script:
+  - mvn package
+  - ./trufflephp $TEST
+  - if [[ "$TRUFFLEPHP_BUILD_NATIVE" == "true" ]]; then ./trufflephp-native/trufflephp-native $TEST; fi;
+  - if [[ "$TRUFFLEPHP_BUILD_NATIVE" == "true" ]]; then  $JAVA_HOME/bin/gu install -L ./trufflephp-component/trufflephp-component.jar; fi;
+  - if [[ "$TRUFFLEPHP_BUILD_NATIVE" == "true" ]]; then  $JAVA_HOME/bin/trufflephp $TEST; fi;
+  - if [[ "$TRUFFLEPHP_BUILD_NATIVE" == "true" ]]; then  $JAVA_HOME/bin/trufflephp-native $TEST; fi;
+  - if [[ "$TRUFFLEPHP_BUILD_NATIVE" == "true" ]]; then  $JAVA_HOME/bin/polyglot --jvm --language php --file $TEST; fi;
+  - if [[ "$TRUFFLEPHP_BUILD_NATIVE" == "true" ]]; then  $JAVA_HOME/bin/gu remove org.trufflephp; fi;

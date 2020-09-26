@@ -1,0 +1,46 @@
+package org.trufflephp.nodes.controlflow;
+
+import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.NodeInfo;
+import org.trufflephp.nodes.PhpExprNode;
+import org.trufflephp.nodes.PhpStmtNode;
+import org.trufflephp.nodes.StmtListNode;
+import org.trufflephp.nodes.unary.PhpConvertToBooleanNodeGen;
+
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * @author abertschi
+ */
+@NodeInfo(shortName = "for")
+public final class PhpForWhileNode extends PhpStmtNode {
+
+    @Child
+    private PhpStmtNode initNode;
+
+    @Child
+    private PhpWhileNode whileNode;
+
+    public PhpForWhileNode(List<PhpExprNode> inits,
+                           List<PhpExprNode> conditions,
+                           List<PhpExprNode> updaters,
+                           List<PhpStmtNode> loopBody) {
+
+        this.initNode = new ExprGroupNode(inits);
+        PhpExprNode condition =
+                PhpConvertToBooleanNodeGen.createAndWrap(new ExprGroupNode(conditions));
+        PhpStmtNode updater = new ExprGroupNode(updaters);
+
+        LinkedList<PhpStmtNode> bodyStmts = new LinkedList<>(loopBody);
+        bodyStmts.add(updater);
+
+        StmtListNode stmtList = new StmtListNode(bodyStmts);
+        this.whileNode = new PhpWhileNode(condition, stmtList);
+    }
+
+    public void executeVoid(VirtualFrame frame) {
+        initNode.executeVoid(frame);
+        whileNode.executeVoid(frame);
+    }
+}

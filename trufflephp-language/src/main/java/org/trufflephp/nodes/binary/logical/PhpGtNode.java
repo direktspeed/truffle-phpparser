@@ -1,0 +1,28 @@
+package org.trufflephp.nodes.binary.logical;
+
+import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.NodeInfo;
+import org.trufflephp.nodes.binary.PhpBinaryNode;
+
+/**
+ * @author abertschi
+ */
+@NodeInfo(shortName = ">")
+public abstract class PhpGtNode extends PhpBinaryNode {
+
+    @Specialization
+    public boolean doOpLong(VirtualFrame f, long a, long b) {
+        return a > b;
+    }
+
+    @Specialization
+    public boolean doOpDouble(VirtualFrame f, double a, double b) {
+        return a > b;
+    }
+
+    @Specialization
+    protected Object fallback(Object left, Object right) {
+        throw new UnsupportedOperationException("Generic greater than is not yet supported");
+    }
+}

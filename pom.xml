@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>kis</groupId>
-    <artifactId>TrufflePHP</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.trufflephp</groupId>
+  <artifactId>trufflephp-parent</artifactId>
+  <version>20.2.0-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+    <graalvm.version>20.2.0</graalvm.version>
+  </properties>
+  <packaging>pom</packaging>
+
+
+    <scm>
+        <connection>scm:git:https://github.com/direktspeed/trufflephp.git</connection>
+        <url>https://github.com/direktspeed/trufflephp</url>
+    </scm>
+
     <modules>
-        <module>language</module>
-        <module>launcher</module>
-    </modules>
-    <properties>
-        <graalvm.version>1.0.0-rc10</graalvm.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <module>trufflephp-parser</module>
+    <module>trufflephp-language</module>
+    <module>trufflephp-launcher</module>
+    <module>trufflephp-native</module>
+    <module>trufflephp-component</module>
+  </modules>
 </project>

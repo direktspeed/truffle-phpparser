@@ -1,0 +1,60 @@
+## -*- coding: utf-8;mode: org; fill-column: 80;  -*-
+
+#+TITLE: PHP Parser for Java
+
+This piece of software provides the PHP Parser used by the [[https://projects.eclipse.org/projects/tools.pdt][Eclipse PHP
+Development Tools (PDT)]] project as a dependency-free standalone binary.
+
+The upstream parser comes with many dependencies making it impractical to be used by other projects.
+trufflephp-parser is a fork of [[https://projects.eclipse.org/projects/tools.pdt][Eclipse PHP Development Tools (PDT)]] project.
+
+It's a fast, [[http://www2.cs.tum.edu/projects/cup/][java-cup]] and [[https://jflex.de/][JFlex]] based, LALR parser supporting PHP 7+ grammar.
+
+** Features
+- PHP 7.4
+- Fast and lightweight
+- AST with Visitor for tree transformation
+- Testsuite which compares parsing output with upstream parser
+
+** Getting Started
+#+begin_src 
+<dependency>
+    <groupId>org.trufflephp.parser</groupId>
+    <artifactId>php-parser</artifactId>
+    <version>${project.version}</version>
+</dependency>
+#+end_src
+
+** API
+#+begin_src java
+  String code = "<?php /* php source code */ ?>";
+  ASTParser parser = ASTParser.newParser(PHPVersion.PHP7_4);
+  parser.setSource(code.toCharArray());
+  parser.addErrorListener(new ConsoleErrorListener());
+  Program pgm = parser.parsePhpProgram();
+
+  HierarchicalVisitor visitor = new HierarchicalVisitor();
+  pgm.accept(visitor);
+
+#+end_src
+
+** Upstream
+https://github.com/eclipse/pdt
+
+** Current Status/ TODOs
+- [X] Factor out dependencies used by eclipse PDT, eclipse dltk
+- [X] cup parser is currently not built on maven install, bin files are used instead
+  - integration ant into maven to build cup on each mvn install
+- [X] Write tests which compare parsing results with upstream
+- [X] Setup Travis
+- [X] Compare parsing benchmarks with native php, JPHP, Antrl
+- [ ] Add support for previous PHP versions (5 - 7.3)
+
+
+** Licence
+EPL license
+
+CUP Parser Generator Copyright Notice, License, and Disclaimer
+Copyright 1996-2015 by Scott Hudson, Frank Flannery, C. Scott Ananian, Michael Petter
+
+

@@ -1,0 +1,7 @@
+venv*
+measurements/
+measurements.sqlite.backups/
+__pychache__/*
+__pycache__/
+render
+export/
